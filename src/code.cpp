@@ -20,7 +20,6 @@ void rcpp_rprintf(NumericVector v){
 }
 
 
-
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 // #### Graph helper functions ####
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -44,29 +43,11 @@ IntegerVector get_edges(int v1, IntegerVector v2s, List edge_list){
 }
 
 
-
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-// #### NKDE discontinuous functions ####
+// #### NKDE continuous functions ####
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-//' The recursive function to calculate continuous NKDE
-//'
-//' @param samples_k a vector of current KDE values at sample points
-//' @param graph The igraph graph object representing the graph
-//' @param v the starting node
-//' @param v1 the ending node of l1
-//' @param l1 the considered edge during this recursion
-//' @param d the current distance value (updated during recursion)
-//' @param alpha the current alpha value (updated during recursion)
-//' @param bw the kernel bandwidth
-//' @param kernel_func the function to calculate the kernel from distance
-//' @param samples a DataFrame of the samples (with spatial coordinates and belonging edge)
-//' @param nodes a DataFrame representing the nodes of the graph (with spatial coordinates)
-//' @param line_list a DataFrame representing the lines of the graph
-//' @param depth the actual recursion depth (updated during recursion)
-//' @param max_depth the maximum recursion depth (after which recursion is stopped)
-//' @return a numeric vector of the kernel values for each sample
-//'
+
 NumericVector esc_kernel_rcpp(NumericVector samples_k, List edge_list, List neighbour_list, int v, int v1, int l1, double d,double alpha, double bw, Function kernel_func,  NumericVector line_weights, IntegerVector samples_edgeid, NumericVector samples_x, NumericVector samples_y, IntegerVector samples_oid, NumericVector nodes_x, NumericVector nodes_y , int depth, int max_depth){
 
   //step1 find the index of the right samples
@@ -131,6 +112,7 @@ NumericVector esc_kernel_rcpp(NumericVector samples_k, List edge_list, List neig
 //' @param nodes a DataFrame representing the nodes of the graph (with spatial coordinates)
 //' @param line_list a DataFrame representing the lines of the graph
 //' @param max_depth the maximum recursion depth (after which recursion is stopped)
+//' @param verbose a boolean indicating if the function must print its progress
 //' @return a DataFrame with two columns : the kernel values (sum_k) and the number of event reaching each samples (n)
 //' @export
 //'
@@ -191,4 +173,142 @@ DataFrame continuous_nkde_cpp(List edge_list, List neighbour_list, NumericVector
   return df;
 }
 
+
+//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+// #### NKDE discontinuous functions ####
+//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+NumericVector esd_kernel_rcpp(int y, List edge_list, List neighbour_list, double bw, Function kernel_func,  NumericVector line_weights, IntegerVector samples_edgeid, NumericVector samples_x, NumericVector samples_y, IntegerVector samples_oid, NumericVector nodes_x, NumericVector nodes_y){
+  //preparing the first iteration
+  List parameters = List::create(List::create(Named("v")=y,
+                          Named("d")=0.0,
+                          Named("prev_line")=-999,
+                          Named("alpha") = 1.0));
+
+  //creating the empty samples_k values
+  NumericVector samples_k = rep(0.0,samples_x.length());
+
+  while(parameters.length()>0){
+    List new_parameters = List::create();
+    int cnt_p = parameters.length();
+    for(int i=0; i < cnt_p; ++i){
+      List params = parameters[i];
+      // step0 : unpack the parameters
+      int v = params["v"];
+      int prev_line = params["prev_line"];
+      double d = params["d"];
+      double alpha = params["alpha"];
+      // step1 : find all reachable nodes
+      IntegerVector v_neighbours = neighbour_list[v-1];
+      //step2 find all lines connecting these nodes
+      IntegerVector Lv = get_edges(v,v_neighbours,edge_list);
+      LogicalVector test = Lv!=prev_line;
+      Lv = Lv[test];
+      v_neighbours = v_neighbours[test];
+      if(v_neighbours.length()>0){
+        double node_x = nodes_x[v-1];
+        double node_y = nodes_y[v-1];
+        // step3 : iterate on each of these lines
+        int cnt_j = Lv.length();
+        for(int j=0; j < cnt_j; ++j){
+          int li = Lv[j];
+          int vi = v_neighbours[j];
+          // calculating distance for each samples on that line
+          LogicalVector test = samples_edgeid==li;
+          NumericVector sampling_x = samples_x[test];
+          NumericVector sampling_y = samples_y[test];
+          IntegerVector sampling_oid = samples_oid[test];
+          sampling_oid = sampling_oid-1;
+          NumericVector part1 = (sampling_x - node_x)*(sampling_x - node_x);
+          NumericVector part2 = (sampling_y - node_y)*(sampling_y - node_y);
+          NumericVector x_dists = sqrt(part1 + part2) + d;
+          //calculating the kernel values
+          NumericVector old_values = samples_k[test];
+          NumericVector new_values = kernel_func(x_dists, bw);
+          new_values = new_values * alpha;
+          new_values = new_values + old_values;
+          samples_k[test] = new_values ;
+          // now, updating the value for the new point
+          double d2 = line_weights[li-1];
+          d2 = d2 + d;
+          if(d2<bw){
+          // trouvons les voisins potentiels
+            IntegerVector vi_neighbours = neighbour_list[vi-1];
+            LogicalVector test = vi_neighbours!=v;
+            vi_neighbours = vi_neighbours[test];
+            // updatons alpha
+            double new_alpha = alpha * (1.0/vi_neighbours.length());
+            List new_list = List::create(Named("v")=vi,
+                                         Named("d")=d2,
+                                         Named("prev_line")=li,
+                                         Named("alpha") = new_alpha);
+            new_parameters.push_back(new_list);
+          }
+        }
+      }
+
+
+    }
+    parameters = new_parameters;
+  }
+  return samples_k;
+}
+
+
+
+//' @title The main function to calculate discontinuous NKDE
+//'
+//' @param edge_list A list of edges, accessible by their names
+//' @param neighbour_list a list of the neighbours of each node
+//' @param events a numeric vector of the node id of each event
+//' @param weights a numeric vector of the weight of each event
+//' @param samples a DataFrame of the samples (with spatial coordinates and belonging edge)
+//' @param bw the kernel bandwidth
+//' @param kernel_func the function to calculate the kernel from distance
+//' @param nodes a DataFrame representing the nodes of the graph (with spatial coordinates)
+//' @param line_list a DataFrame representing the lines of the graph
+//' @param verbose a boolean indicating if the function must print its progress
+//' @return a DataFrame with two columns : the kernel values (sum_k) and the number of event reaching each samples (n)
+//' @export
+//'
+// [[Rcpp::export]]
+DataFrame discontinuous_nkde_cpp(List edge_list, List neighbour_list, NumericVector events, NumericVector weights, DataFrame samples, double bw, Function kernel_func, DataFrame nodes, DataFrame line_list, bool verbose){
+  //step 1 : mettre toutes les valeurs a 0
+  NumericVector base_k = rep(0.0,samples.nrow());
+  NumericVector base_count = rep(0.0,samples.nrow());
+
+  //step0 : extraire tous les vecteurs necessaires
+  NumericVector line_weights = line_list["weight"];
+  IntegerVector samples_edgeid = samples["edge_id"];
+  NumericVector samples_x = samples["X_coords"];
+  NumericVector samples_y = samples["Y_coords"];
+  IntegerVector samples_oid = samples["oid"];
+  NumericVector nodes_x = nodes["X_coords"];
+  NumericVector nodes_y = nodes["Y_coords"];
+
+  //step2 : iterer sur chaque event
+  int cnt_e = events.length();
+  Progress p(cnt_e, verbose);
+  for(int i=0; i < cnt_e; ++i){
+    p.increment(); // update progress
+    //#preparer les differentes valeurs de departs pour l'event y
+    int y = events[i];
+    double w = weights[i];
+    NumericVector samples_k = esd_kernel_rcpp(y, edge_list,
+                                              neighbour_list, bw,
+                                              kernel_func, line_weights,
+                                              samples_edgeid, samples_x,
+                                              samples_y, samples_oid,
+                                              nodes_x, nodes_y);
+    base_k = base_k + samples_k;
+    NumericVector count = rep(0.0,samples.nrow());
+    LogicalVector test = samples_k>0;
+    count[test] = 1.0;
+    base_count = base_count + (count*w);
+
+  };
+  DataFrame df =  DataFrame::create( Named("sum_k") = base_k ,Named("n") = base_count);
+  return df;
+}
 
