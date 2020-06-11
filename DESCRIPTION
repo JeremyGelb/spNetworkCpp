@@ -1,0 +1,26 @@
+Package: spNetworkCpp
+Type: Package
+Title: Spatial Analysis on network
+Version: 0.1.0.9000
+Authors@R: c(
+    person("Jeremy", "Gelb", email = "jeremy.gelb@ucs.inrs.ca",role = c("aut", "cre")),
+    person("Philippe", "Apparicio", email="philippe.apparicio@ucs.inrs.ca", role=c("ctb")))
+Description: The spNetwork packages provides functions to perform spatial analysis on network.
+    In its actual form, it allows to calculate Network Kernel Density Estimate, and to build
+    spatial matrices (listw object spdep like) to calculate indicators like Moran I with network
+    constraint neighbourhood.
+License: GPL-2
+Encoding: UTF-8
+LazyData: true
+Imports: 
+    Rcpp (>= 1.0.4.6),
+    RcppProgress (>= 0.4.2)
+Depends:
+    R (>= 3.6)
+RoxygenNote: 7.1.0
+VignetteBuilder: knitr
+URL: http://github.com/JeremyGelb/spNetworkCpp
+BugReports: http://github.com/JeremyGelb/spNetworkCpp/issues
+LinkingTo: 
+    Rcpp,
+    RcppProgress
