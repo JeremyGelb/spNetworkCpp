@@ -19,6 +19,13 @@ void rcpp_rprintf(NumericVector v){
   }
 }
 
+void rcpp_rprintf_int(IntegerVector v){
+  // printing values of all the elements of Rcpp vector
+  for(int i=0; i<v.length(); ++i){
+    Rprintf("the value of v[%i] : %f \n", i, v[i]);
+  }
+}
+
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 // #### Graph helper functions ####
@@ -66,21 +73,25 @@ NumericVector esc_kernel_rcpp(NumericVector samples_k, List edge_list, List neig
   NumericVector x_dists = sqrt(part1 + part2) + d;
   //step3 calculating the values of the new kernel
   NumericVector new_k = kernel_func(x_dists,bw);
-  //Rcout << "    here are the new_k2 values : " << "\n";
   NumericVector new_k2 = new_k*alpha;
-  //rcpp_rprintf(new_k2);
   NumericVector old_values = samples_k[sampling_oid];
   NumericVector K_final = new_k2 + old_values;
   samples_k[sampling_oid] = K_final;
 
   //mettre a jour d
   double d2 = line_weights[l1-1] + d;
-  int new_depth = depth+1;
-  if((bw>d2) & (new_depth < max_depth)){
+  if((bw>d2) & (depth < max_depth)){
     //on veut trouver toutes les lignes emannant de v (Lv)
     IntegerVector v_neighbours = neighbour_list[v1-1];
     IntegerVector Lv = get_edges(v1,v_neighbours,edge_list);
     int n = v_neighbours.length();
+    int new_depth;
+    //updating depth
+    if(n>2){
+      new_depth = depth+1;
+    }else{
+      new_depth = depth+0;
+    }
     if(n>1){
       for(int j=0; j < n; ++j){
         int li = Lv[j];
@@ -180,77 +191,103 @@ DataFrame continuous_nkde_cpp(List edge_list, List neighbour_list, NumericVector
 
 
 NumericVector esd_kernel_rcpp(int y, List edge_list, List neighbour_list, double bw, Function kernel_func,  NumericVector line_weights, IntegerVector samples_edgeid, NumericVector samples_x, NumericVector samples_y, IntegerVector samples_oid, NumericVector nodes_x, NumericVector nodes_y){
-  //preparing the first iteration
-  List parameters = List::create(List::create(Named("v")=y,
-                          Named("d")=0.0,
-                          Named("prev_line")=-999,
-                          Named("alpha") = 1.0));
-
-  //creating the empty samples_k values
+  //definir les premiere valeurs a 0
   NumericVector samples_k = rep(0.0,samples_x.length());
+  //definir la premiere serie de parametres
+  List all_parameters = List::create(
+      List::create(Named("v")=y,
+          Named("d")=0.0,
+          Named("alpha") = 1.0,
+          Named("prev_node")=-999)
+  );
 
-  while(parameters.length()>0){
+  //lancement des iterations
+  while(all_parameters.length()>0){
+    //on cree une petite liste vide
     List new_parameters = List::create();
-    int cnt_p = parameters.length();
-    for(int i=0; i < cnt_p; ++i){
-      List params = parameters[i];
-      // step0 : unpack the parameters
+    int cnt_list = all_parameters.length();
+    //on itere sur les cas en cours
+    for(int i=0; i < cnt_list; ++i){
+      List params = all_parameters[i];
+
+      //step1 : unpacking the values
       int v = params["v"];
-      int prev_line = params["prev_line"];
-      double d = params["d"];
       double alpha = params["alpha"];
-      // step1 : find all reachable nodes
-      IntegerVector v_neighbours = neighbour_list[v-1];
-      //step2 find all lines connecting these nodes
-      IntegerVector Lv = get_edges(v,v_neighbours,edge_list);
-      LogicalVector test = Lv!=prev_line;
-      Lv = Lv[test];
-      v_neighbours = v_neighbours[test];
+      int prev_node = params["prev_node"];
+      double d = params["d"];
+      //step2 : on trouve les voisins de v (et on enleve le precedent node)
+      IntegerVector v_neighbours_all = neighbour_list[(v-1)];
+      LogicalVector test = v_neighbours_all != prev_node;
+      IntegerVector v_neighbours = v_neighbours_all[test];
+      //avec ces voisins, on peut setter le new_alpha
+      double new_alpha;
+      if(prev_node>=0){
+        int n_nei = v_neighbours.length();
+        new_alpha = (1.0/((double)n_nei)) * alpha;
+      }else{
+        new_alpha = 1.0;
+      }
       if(v_neighbours.length()>0){
-        double node_x = nodes_x[v-1];
-        double node_y = nodes_y[v-1];
-        // step3 : iterate on each of these lines
-        int cnt_j = Lv.length();
+        //step3 on trouve les edges entre v et ses voisins
+        IntegerVector edges = get_edges(v,v_neighbours,edge_list);
+
+        double node_x = nodes_x[(v-1)];
+        double node_y = nodes_y[(v-1)];
+
+        //step4 :  on va iterer sur chacune de ces lignes
+        int cnt_j = edges.length();
         for(int j=0; j < cnt_j; ++j){
-          int li = Lv[j];
+          int li = edges[j];
+
           int vi = v_neighbours[j];
-          // calculating distance for each samples on that line
-          LogicalVector test = samples_edgeid==li;
-          NumericVector sampling_x = samples_x[test];
-          NumericVector sampling_y = samples_y[test];
-          IntegerVector sampling_oid = samples_oid[test];
-          sampling_oid = sampling_oid-1;
-          NumericVector part1 = (sampling_x - node_x)*(sampling_x - node_x);
-          NumericVector part2 = (sampling_y - node_y)*(sampling_y - node_y);
-          NumericVector x_dists = sqrt(part1 + part2) + d;
-          //calculating the kernel values
-          NumericVector old_values = samples_k[test];
-          NumericVector new_values = kernel_func(x_dists, bw);
-          new_values = new_values * alpha;
-          new_values = new_values + old_values;
-          samples_k[test] = new_values ;
-          // now, updating the value for the new point
-          double d2 = line_weights[li-1];
-          d2 = d2 + d;
-          if(d2<bw){
-          // trouvons les voisins potentiels
-            IntegerVector vi_neighbours = neighbour_list[vi-1];
-            LogicalVector test = vi_neighbours!=v;
-            vi_neighbours = vi_neighbours[test];
-            // updatons alpha
-            double new_alpha = alpha * (1.0/vi_neighbours.length());
-            List new_list = List::create(Named("v")=vi,
-                                         Named("d")=d2,
-                                         Named("prev_line")=li,
-                                         Named("alpha") = new_alpha);
-            new_parameters.push_back(new_list);
+
+          //il faut trouver les echantillons concernes
+          LogicalVector test = samples_edgeid == li;
+          NumericVector sub_samples_x = samples_x[test];
+          NumericVector sub_samples_y = samples_y[test];
+
+          // il faut maintenant calculer les distances entre ces observations
+          NumericVector part1 = pow((node_x - sub_samples_x),2);
+          NumericVector part2 = pow((node_y - sub_samples_y),2);
+          NumericVector d1 = sqrt(part1+part2);
+          NumericVector d2 = d1 + d;
+
+          //on calcule maintenant la valeur kernel
+          NumericVector k = kernel_func(d2,bw);
+          NumericVector k1 = k * new_alpha;
+          //et on l'ajoute a la valeur precedente
+          NumericVector old_k = samples_k[test];
+          NumericVector new_k = old_k + k1;
+          samples_k[test] = new_k;
+
+          //il ne reste plus que a voir si on peut continuer sur le prochain noeud
+
+          double d3 = d + line_weights[(li-1)];
+
+          if(d3<bw){
+
+            List new_params = List::create(
+                 Named("v") = vi,
+                 Named("prev_node") = v,
+                 Named("d") = d3,
+                 Named("alpha") = new_alpha
+                 );
+
+            new_parameters.push_back(new_params);
+
           }
+
         }
       }
 
-
     }
-    parameters = new_parameters;
+    //on reset les nouveaux parameters
+    for(int j=0; j < all_parameters.length(); ++j){
+      all_parameters.erase(j);
+    }
+    for(int j=0; j < new_parameters.length(); ++j){
+      all_parameters.push_back(new_parameters[j]);
+    }
   }
   return samples_k;
 }
