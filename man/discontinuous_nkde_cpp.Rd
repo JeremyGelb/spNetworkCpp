@@ -14,6 +14,7 @@ discontinuous_nkde_cpp(
   kernel_func,
   nodes,
   line_list,
+  max_depth,
   verbose
 )
 }
@@ -35,6 +36,8 @@ discontinuous_nkde_cpp(
 \item{nodes}{a DataFrame representing the nodes of the graph (with spatial coordinates)}
 
 \item{line_list}{a DataFrame representing the lines of the graph}
+
+\item{max_depth}{the maximum recursion depth (after which recursion is stopped)}
 
 \item{verbose}{a boolean indicating if the function must print its progress}
 }

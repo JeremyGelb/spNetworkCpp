@@ -1,7 +1,7 @@
 Package: spNetworkCpp
 Type: Package
 Title: Spatial Analysis on network
-Version: 0.1.2
+Version: 0.1.3
 Authors@R: c(
     person("Jeremy", "Gelb", email = "jeremy.gelb@ucs.inrs.ca",role = c("aut", "cre")))
 Description: The spNetwork packages provides functions to perform spatial analysis on network.
@@ -24,3 +24,4 @@ BugReports: http://github.com/JeremyGelb/spNetworkCpp/issues
 LinkingTo: 
     Rcpp,
     RcppProgress
+SystemRequirements: C++11

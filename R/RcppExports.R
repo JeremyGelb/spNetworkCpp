@@ -32,11 +32,12 @@ continuous_nkde_cpp <- function(edge_list, neighbour_list, events, weights, samp
 #' @param kernel_func the function to calculate the kernel from distance
 #' @param nodes a DataFrame representing the nodes of the graph (with spatial coordinates)
 #' @param line_list a DataFrame representing the lines of the graph
+#' @param max_depth the maximum recursion depth (after which recursion is stopped)
 #' @param verbose a boolean indicating if the function must print its progress
 #' @return a DataFrame with two columns : the kernel values (sum_k) and the number of event reaching each samples (n)
 #' @export
 #'
-discontinuous_nkde_cpp <- function(edge_list, neighbour_list, events, weights, samples, bw, kernel_func, nodes, line_list, verbose) {
-    .Call('_spNetworkCpp_discontinuous_nkde_cpp', PACKAGE = 'spNetworkCpp', edge_list, neighbour_list, events, weights, samples, bw, kernel_func, nodes, line_list, verbose)
+discontinuous_nkde_cpp <- function(edge_list, neighbour_list, events, weights, samples, bw, kernel_func, nodes, line_list, max_depth, verbose) {
+    .Call('_spNetworkCpp_discontinuous_nkde_cpp', PACKAGE = 'spNetworkCpp', edge_list, neighbour_list, events, weights, samples, bw, kernel_func, nodes, line_list, max_depth, verbose)
 }
 

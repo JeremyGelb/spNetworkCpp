@@ -27,8 +27,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // discontinuous_nkde_cpp
-DataFrame discontinuous_nkde_cpp(List edge_list, List neighbour_list, NumericVector events, NumericVector weights, DataFrame samples, double bw, Function kernel_func, DataFrame nodes, DataFrame line_list, bool verbose);
-RcppExport SEXP _spNetworkCpp_discontinuous_nkde_cpp(SEXP edge_listSEXP, SEXP neighbour_listSEXP, SEXP eventsSEXP, SEXP weightsSEXP, SEXP samplesSEXP, SEXP bwSEXP, SEXP kernel_funcSEXP, SEXP nodesSEXP, SEXP line_listSEXP, SEXP verboseSEXP) {
+DataFrame discontinuous_nkde_cpp(List edge_list, List neighbour_list, NumericVector events, NumericVector weights, DataFrame samples, double bw, Function kernel_func, DataFrame nodes, DataFrame line_list, int max_depth, bool verbose);
+RcppExport SEXP _spNetworkCpp_discontinuous_nkde_cpp(SEXP edge_listSEXP, SEXP neighbour_listSEXP, SEXP eventsSEXP, SEXP weightsSEXP, SEXP samplesSEXP, SEXP bwSEXP, SEXP kernel_funcSEXP, SEXP nodesSEXP, SEXP line_listSEXP, SEXP max_depthSEXP, SEXP verboseSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -41,15 +41,16 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< Function >::type kernel_func(kernel_funcSEXP);
     Rcpp::traits::input_parameter< DataFrame >::type nodes(nodesSEXP);
     Rcpp::traits::input_parameter< DataFrame >::type line_list(line_listSEXP);
+    Rcpp::traits::input_parameter< int >::type max_depth(max_depthSEXP);
     Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
-    rcpp_result_gen = Rcpp::wrap(discontinuous_nkde_cpp(edge_list, neighbour_list, events, weights, samples, bw, kernel_func, nodes, line_list, verbose));
+    rcpp_result_gen = Rcpp::wrap(discontinuous_nkde_cpp(edge_list, neighbour_list, events, weights, samples, bw, kernel_func, nodes, line_list, max_depth, verbose));
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
     {"_spNetworkCpp_continuous_nkde_cpp", (DL_FUNC) &_spNetworkCpp_continuous_nkde_cpp, 11},
-    {"_spNetworkCpp_discontinuous_nkde_cpp", (DL_FUNC) &_spNetworkCpp_discontinuous_nkde_cpp, 10},
+    {"_spNetworkCpp_discontinuous_nkde_cpp", (DL_FUNC) &_spNetworkCpp_discontinuous_nkde_cpp, 11},
     {NULL, NULL, 0}
 };
 
