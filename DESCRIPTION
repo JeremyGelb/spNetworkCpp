@@ -15,7 +15,8 @@ Encoding: UTF-8
 LazyData: true
 Imports: 
     Rcpp (>= 1.0.4.6),
-    RcppProgress (>= 0.4.2)
+    RcppProgress (>= 0.4.2),
+    RcppArmadillo (>= 0.9.850.1.0)
 Depends:
     R (>= 3.6)
 RoxygenNote: 7.1.0
@@ -23,5 +24,6 @@ URL: http://github.com/JeremyGelb/spNetworkCpp
 BugReports: http://github.com/JeremyGelb/spNetworkCpp/issues
 LinkingTo: 
     Rcpp,
-    RcppProgress
+    RcppProgress,
+    RcppArmadillo
 SystemRequirements: C++11
