@@ -2,7 +2,7 @@
 % Please edit documentation in R/RcppExports.R
 \name{continuousWorker}
 \alias{continuousWorker}
-\title{The worker function to calculate continuous NKDE (with ARMADILLO)}
+\title{The worker function to calculate continuous NKDE (with ARMADILLO and sparse matrix)}
 \arguments{
 \item{kernel_func}{a cpp pointer function (selected with the kernel name)}
 
@@ -45,7 +45,12 @@ its neighbours}
 \value{
 a vector with the kernel values calculated for each samples from
 the first node given
+
+a vector with the kernel values calculated for each samples from
+the first node given
 }
 \description{
-The worker function to calculate continuous NKDE (with ARMADILLO)
+The worker function to calculate continuous NKDE (with ARMADILLO and sparse matrix)
+
+The worker function to calculate continuous NKDE (with ARMADILLO and Integer matrix)
 }

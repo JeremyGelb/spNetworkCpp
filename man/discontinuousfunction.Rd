@@ -2,10 +2,24 @@
 % Please edit documentation in R/RcppExports.R
 \name{discontinuousfunction}
 \alias{discontinuousfunction}
-\alias{discontinuous_nkde_cpparma}
-\title{The main function to calculate discontinuous NKDE (ARMA)}
+\alias{discontinuous_nkde_cpp_arma_sparse}
+\alias{discontinuous_nkde_cpp_arma}
+\title{The main function to calculate discontinuous NKDE (ARMA and sparse matrix)}
 \usage{
-discontinuous_nkde_cpparma(
+discontinuous_nkde_cpp_arma_sparse(
+  neighbour_list,
+  events,
+  weights,
+  samples,
+  bw,
+  kernel_name,
+  nodes,
+  line_list,
+  max_depth,
+  verbose
+)
+
+discontinuous_nkde_cpp_arma(
   neighbour_list,
   events,
   weights,
@@ -41,7 +55,11 @@ discontinuous_nkde_cpparma(
 }
 \value{
 a DataFrame with two columns : the kernel values (sum_k) and the number of event reaching each samples (n)
+
+a DataFrame with two columns : the kernel values (sum_k) and the number of event reaching each samples (n)
 }
 \description{
-The main function to calculate discontinuous NKDE (ARMA)
+The main function to calculate discontinuous NKDE (ARMA and sparse matrix)
+
+The main function to calculate discontinuous NKDE (ARMA and Integer matrix)
 }
