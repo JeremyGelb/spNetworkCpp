@@ -182,6 +182,7 @@ fptr select_kernel(std::string c) {
   if (c.compare("quartic")==0 ) {
     return quartic_kernel;
   }
+  return quartic_kernel;
 }
 
 
@@ -350,7 +351,7 @@ arma::vec esc_kernel_rcpp_arma(fptr kernel_func, arma::vec samples_k, List neigh
 //' @param events a numeric vector of the node id of each event
 //' @param weights a numeric vector of the weight of each event
 //' @param samples a DataFrame of the samples (with spatial coordinates and belonging edge)
-//' @param bw the kernel bandwidth
+//' @param bws the kernel bandwidths for each event
 //' @param kernel_name the name of the kernel to use
 //' @param nodes a DataFrame representing the nodes of the graph (with spatial coordinates)
 //' @param line_list a DataFrame representing the lines of the graph
@@ -360,7 +361,7 @@ arma::vec esc_kernel_rcpp_arma(fptr kernel_func, arma::vec samples_k, List neigh
 //' @export
 //'
 // [[Rcpp::export]]
-DataFrame continuous_nkde_cpp_arma_sparse(List neighbour_list, NumericVector events, NumericVector weights, DataFrame samples, double bw, std::string kernel_name, DataFrame nodes, DataFrame line_list, int max_depth, bool verbose){
+DataFrame continuous_nkde_cpp_arma_sparse(List neighbour_list, NumericVector events, NumericVector weights, DataFrame samples, NumericVector bws, std::string kernel_name, DataFrame nodes, DataFrame line_list, int max_depth, bool verbose){
 
   //selecting the kernel function
   fptr kernel_func = select_kernel(kernel_name);
@@ -395,6 +396,7 @@ DataFrame continuous_nkde_cpp_arma_sparse(List neighbour_list, NumericVector eve
     //preparer les differentes valeurs de departs pour l'event y
     int y = events[i];
     double w = weights[i];
+    double bw = bws[i];
     //on veut trouver toutes les voisins emannant de y
     IntegerVector y_neighbours = neighbour_list[y-1];
     int cnt_y = y_neighbours.length()-1;
@@ -431,7 +433,7 @@ DataFrame continuous_nkde_cpp_arma_sparse(List neighbour_list, NumericVector eve
 //' @param events a numeric vector of the node id of each event
 //' @param weights a numeric vector of the weight of each event
 //' @param samples a DataFrame of the samples (with spatial coordinates and belonging edge)
-//' @param bw the kernel bandwidth
+//' @param bws the kernel bandwidths for each event
 //' @param kernel_name the name of the kernel to use
 //' @param nodes a DataFrame representing the nodes of the graph (with spatial coordinates)
 //' @param line_list a DataFrame representing the lines of the graph
@@ -441,7 +443,7 @@ DataFrame continuous_nkde_cpp_arma_sparse(List neighbour_list, NumericVector eve
 //' @export
 //'
 // [[Rcpp::export]]
-DataFrame continuous_nkde_cpp_arma(List neighbour_list, NumericVector events, NumericVector weights, DataFrame samples, double bw, std::string kernel_name, DataFrame nodes, DataFrame line_list, int max_depth, bool verbose){
+DataFrame continuous_nkde_cpp_arma(List neighbour_list, NumericVector events, NumericVector weights, DataFrame samples, NumericVector bws, std::string kernel_name, DataFrame nodes, DataFrame line_list, int max_depth, bool verbose){
 
   //selecting the kernel function
   fptr kernel_func = select_kernel(kernel_name);
@@ -475,6 +477,7 @@ DataFrame continuous_nkde_cpp_arma(List neighbour_list, NumericVector events, Nu
     //preparer les differentes valeurs de departs pour l'event y
     int y = events[i];
     double w = weights[i];
+    double bw = bws[i];
     //on veut trouver toutes les voisins emannant de y
     IntegerVector y_neighbours = neighbour_list[y-1];
     int cnt_y = y_neighbours.length()-1;
@@ -733,7 +736,7 @@ arma::vec esd_kernel_rcpp_arma(fptr kernel_func, IntegerMatrix edge_mat,
 //' @param events a numeric vector of the node id of each event
 //' @param weights a numeric vector of the weight of each event
 //' @param samples a DataFrame of the samples (with spatial coordinates and belonging edge)
-//' @param bw the kernel bandwidth
+//' @param bws the kernel bandwidths for each event
 //' @param kernel_name the name of the kernel function to use
 //' @param nodes a DataFrame representing the nodes of the graph (with spatial coordinates)
 //' @param line_list a DataFrame representing the lines of the graph
@@ -743,7 +746,7 @@ arma::vec esd_kernel_rcpp_arma(fptr kernel_func, IntegerMatrix edge_mat,
 //' @export
 //'
 // [[Rcpp::export]]
-DataFrame discontinuous_nkde_cpp_arma_sparse(List neighbour_list, NumericVector events, NumericVector weights, DataFrame samples, double bw, std::string kernel_name, DataFrame nodes, DataFrame line_list, int max_depth, bool verbose){
+DataFrame discontinuous_nkde_cpp_arma_sparse(List neighbour_list, NumericVector events, NumericVector weights, DataFrame samples, NumericVector bws, std::string kernel_name, DataFrame nodes, DataFrame line_list, int max_depth, bool verbose){
 
   //selecting the kernel function
   fptr kernel_func = select_kernel(kernel_name);
@@ -777,6 +780,7 @@ DataFrame discontinuous_nkde_cpp_arma_sparse(List neighbour_list, NumericVector 
     //preparer les differentes valeurs de departs pour l'event y
     int y = events[i];
     double w = weights[i];
+    double bw = bws[i];
     // launching recursion
     //NumericVector k = esd_kernel_rcpp(samples_k, edge_dict, neighbour_list ,y,prev_node,d,alpha,bw,kernel_func, line_weights, samples_edgeid, samples_x, samples_y, samples_oid, nodes_x, nodes_y, depth,max_depth);
     arma::vec k = esd_kernel_rcpp_arma_sparse(kernel_func,edge_mat, neighbour_list ,y,bw, line_weights, samples_edgeid, samples_x, samples_y, nodes_x, nodes_y, depth,max_depth);
@@ -802,7 +806,7 @@ DataFrame discontinuous_nkde_cpp_arma_sparse(List neighbour_list, NumericVector 
 //' @param events a numeric vector of the node id of each event
 //' @param weights a numeric vector of the weight of each event
 //' @param samples a DataFrame of the samples (with spatial coordinates and belonging edge)
-//' @param bw the kernel bandwidth
+//' @param bws the kernel bandwidth for each event
 //' @param kernel_name the name of the kernel function to use
 //' @param nodes a DataFrame representing the nodes of the graph (with spatial coordinates)
 //' @param line_list a DataFrame representing the lines of the graph
@@ -812,7 +816,7 @@ DataFrame discontinuous_nkde_cpp_arma_sparse(List neighbour_list, NumericVector 
 //' @export
 //'
 // [[Rcpp::export]]
-DataFrame discontinuous_nkde_cpp_arma(List neighbour_list, NumericVector events, NumericVector weights, DataFrame samples, double bw, std::string kernel_name, DataFrame nodes, DataFrame line_list, int max_depth, bool verbose){
+DataFrame discontinuous_nkde_cpp_arma(List neighbour_list, NumericVector events, NumericVector weights, DataFrame samples, NumericVector bws, std::string kernel_name, DataFrame nodes, DataFrame line_list, int max_depth, bool verbose){
 
   //selecting the kernel function
   fptr kernel_func = select_kernel(kernel_name);
@@ -845,6 +849,7 @@ DataFrame discontinuous_nkde_cpp_arma(List neighbour_list, NumericVector events,
     //preparer les differentes valeurs de departs pour l'event y
     int y = events[i];
     double w = weights[i];
+    double bw = bws[i];
     // launching recursion
     //NumericVector k = esd_kernel_rcpp(samples_k, edge_dict, neighbour_list ,y,prev_node,d,alpha,bw,kernel_func, line_weights, samples_edgeid, samples_x, samples_y, samples_oid, nodes_x, nodes_y, depth,max_depth);
     arma::vec k = esd_kernel_rcpp_arma(kernel_func,edge_mat, neighbour_list ,y,bw, line_weights, samples_edgeid, samples_x, samples_y, nodes_x, nodes_y, depth,max_depth);

@@ -99,7 +99,7 @@ NULL
 #' @param events a numeric vector of the node id of each event
 #' @param weights a numeric vector of the weight of each event
 #' @param samples a DataFrame of the samples (with spatial coordinates and belonging edge)
-#' @param bw the kernel bandwidth
+#' @param bws the kernel bandwidths for each event
 #' @param kernel_name the name of the kernel to use
 #' @param nodes a DataFrame representing the nodes of the graph (with spatial coordinates)
 #' @param line_list a DataFrame representing the lines of the graph
@@ -108,8 +108,8 @@ NULL
 #' @return a DataFrame with two columns : the kernel values (sum_k) and the number of event reaching each samples (n)
 #' @export
 #'
-continuous_nkde_cpp_arma_sparse <- function(neighbour_list, events, weights, samples, bw, kernel_name, nodes, line_list, max_depth, verbose) {
-    .Call('_spNetworkCpp_continuous_nkde_cpp_arma_sparse', PACKAGE = 'spNetworkCpp', neighbour_list, events, weights, samples, bw, kernel_name, nodes, line_list, max_depth, verbose)
+continuous_nkde_cpp_arma_sparse <- function(neighbour_list, events, weights, samples, bws, kernel_name, nodes, line_list, max_depth, verbose) {
+    .Call('_spNetworkCpp_continuous_nkde_cpp_arma_sparse', PACKAGE = 'spNetworkCpp', neighbour_list, events, weights, samples, bws, kernel_name, nodes, line_list, max_depth, verbose)
 }
 
 #' @title The main function to calculate continuous NKDE (with ARMADILO and Integer matrix)
@@ -118,7 +118,7 @@ continuous_nkde_cpp_arma_sparse <- function(neighbour_list, events, weights, sam
 #' @param events a numeric vector of the node id of each event
 #' @param weights a numeric vector of the weight of each event
 #' @param samples a DataFrame of the samples (with spatial coordinates and belonging edge)
-#' @param bw the kernel bandwidth
+#' @param bws the kernel bandwidths for each event
 #' @param kernel_name the name of the kernel to use
 #' @param nodes a DataFrame representing the nodes of the graph (with spatial coordinates)
 #' @param line_list a DataFrame representing the lines of the graph
@@ -127,8 +127,8 @@ continuous_nkde_cpp_arma_sparse <- function(neighbour_list, events, weights, sam
 #' @return a DataFrame with two columns : the kernel values (sum_k) and the number of event reaching each samples (n)
 #' @export
 #'
-continuous_nkde_cpp_arma <- function(neighbour_list, events, weights, samples, bw, kernel_name, nodes, line_list, max_depth, verbose) {
-    .Call('_spNetworkCpp_continuous_nkde_cpp_arma', PACKAGE = 'spNetworkCpp', neighbour_list, events, weights, samples, bw, kernel_name, nodes, line_list, max_depth, verbose)
+continuous_nkde_cpp_arma <- function(neighbour_list, events, weights, samples, bws, kernel_name, nodes, line_list, max_depth, verbose) {
+    .Call('_spNetworkCpp_continuous_nkde_cpp_arma', PACKAGE = 'spNetworkCpp', neighbour_list, events, weights, samples, bws, kernel_name, nodes, line_list, max_depth, verbose)
 }
 
 #' @title The main function to calculate discontinuous NKDE (ARMA and sparse matrix)
@@ -137,7 +137,7 @@ continuous_nkde_cpp_arma <- function(neighbour_list, events, weights, samples, b
 #' @param events a numeric vector of the node id of each event
 #' @param weights a numeric vector of the weight of each event
 #' @param samples a DataFrame of the samples (with spatial coordinates and belonging edge)
-#' @param bw the kernel bandwidth
+#' @param bws the kernel bandwidths for each event
 #' @param kernel_name the name of the kernel function to use
 #' @param nodes a DataFrame representing the nodes of the graph (with spatial coordinates)
 #' @param line_list a DataFrame representing the lines of the graph
@@ -146,8 +146,8 @@ continuous_nkde_cpp_arma <- function(neighbour_list, events, weights, samples, b
 #' @return a DataFrame with two columns : the kernel values (sum_k) and the number of event reaching each samples (n)
 #' @export
 #'
-discontinuous_nkde_cpp_arma_sparse <- function(neighbour_list, events, weights, samples, bw, kernel_name, nodes, line_list, max_depth, verbose) {
-    .Call('_spNetworkCpp_discontinuous_nkde_cpp_arma_sparse', PACKAGE = 'spNetworkCpp', neighbour_list, events, weights, samples, bw, kernel_name, nodes, line_list, max_depth, verbose)
+discontinuous_nkde_cpp_arma_sparse <- function(neighbour_list, events, weights, samples, bws, kernel_name, nodes, line_list, max_depth, verbose) {
+    .Call('_spNetworkCpp_discontinuous_nkde_cpp_arma_sparse', PACKAGE = 'spNetworkCpp', neighbour_list, events, weights, samples, bws, kernel_name, nodes, line_list, max_depth, verbose)
 }
 
 #' @title The main function to calculate discontinuous NKDE (ARMA and Integer matrix)
@@ -156,7 +156,7 @@ discontinuous_nkde_cpp_arma_sparse <- function(neighbour_list, events, weights, 
 #' @param events a numeric vector of the node id of each event
 #' @param weights a numeric vector of the weight of each event
 #' @param samples a DataFrame of the samples (with spatial coordinates and belonging edge)
-#' @param bw the kernel bandwidth
+#' @param bws the kernel bandwidth for each event
 #' @param kernel_name the name of the kernel function to use
 #' @param nodes a DataFrame representing the nodes of the graph (with spatial coordinates)
 #' @param line_list a DataFrame representing the lines of the graph
@@ -165,7 +165,7 @@ discontinuous_nkde_cpp_arma_sparse <- function(neighbour_list, events, weights, 
 #' @return a DataFrame with two columns : the kernel values (sum_k) and the number of event reaching each samples (n)
 #' @export
 #'
-discontinuous_nkde_cpp_arma <- function(neighbour_list, events, weights, samples, bw, kernel_name, nodes, line_list, max_depth, verbose) {
-    .Call('_spNetworkCpp_discontinuous_nkde_cpp_arma', PACKAGE = 'spNetworkCpp', neighbour_list, events, weights, samples, bw, kernel_name, nodes, line_list, max_depth, verbose)
+discontinuous_nkde_cpp_arma <- function(neighbour_list, events, weights, samples, bws, kernel_name, nodes, line_list, max_depth, verbose) {
+    .Call('_spNetworkCpp_discontinuous_nkde_cpp_arma', PACKAGE = 'spNetworkCpp', neighbour_list, events, weights, samples, bws, kernel_name, nodes, line_list, max_depth, verbose)
 }
 

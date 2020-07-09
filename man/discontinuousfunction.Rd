@@ -11,7 +11,7 @@ discontinuous_nkde_cpp_arma_sparse(
   events,
   weights,
   samples,
-  bw,
+  bws,
   kernel_name,
   nodes,
   line_list,
@@ -24,7 +24,7 @@ discontinuous_nkde_cpp_arma(
   events,
   weights,
   samples,
-  bw,
+  bws,
   kernel_name,
   nodes,
   line_list,
@@ -41,7 +41,7 @@ discontinuous_nkde_cpp_arma(
 
 \item{samples}{a DataFrame of the samples (with spatial coordinates and belonging edge)}
 
-\item{bw}{the kernel bandwidth}
+\item{bws}{the kernel bandwidth for each event}
 
 \item{kernel_name}{the name of the kernel function to use}
 
