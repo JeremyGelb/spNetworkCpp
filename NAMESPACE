@@ -2,6 +2,10 @@
 
 export(continuous_nkde_cpp_arma)
 export(continuous_nkde_cpp_arma_sparse)
+export(corrfactor_continuous)
+export(corrfactor_continuous_sparse)
+export(corrfactor_discontinuous)
+export(corrfactor_discontinuous_sparse)
 export(discontinuous_nkde_cpp_arma)
 export(discontinuous_nkde_cpp_arma_sparse)
 importFrom(Rcpp,sourceCpp)

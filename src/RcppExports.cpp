@@ -86,12 +86,76 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// corrfactor_discontinuous_sparse
+List corrfactor_discontinuous_sparse(List neighbour_list, NumericVector events, DataFrame line_list, NumericVector bws, int max_depth);
+RcppExport SEXP _spNetworkCpp_corrfactor_discontinuous_sparse(SEXP neighbour_listSEXP, SEXP eventsSEXP, SEXP line_listSEXP, SEXP bwsSEXP, SEXP max_depthSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< List >::type neighbour_list(neighbour_listSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type events(eventsSEXP);
+    Rcpp::traits::input_parameter< DataFrame >::type line_list(line_listSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type bws(bwsSEXP);
+    Rcpp::traits::input_parameter< int >::type max_depth(max_depthSEXP);
+    rcpp_result_gen = Rcpp::wrap(corrfactor_discontinuous_sparse(neighbour_list, events, line_list, bws, max_depth));
+    return rcpp_result_gen;
+END_RCPP
+}
+// corrfactor_discontinuous
+List corrfactor_discontinuous(List neighbour_list, NumericVector events, DataFrame line_list, NumericVector bws, int max_depth);
+RcppExport SEXP _spNetworkCpp_corrfactor_discontinuous(SEXP neighbour_listSEXP, SEXP eventsSEXP, SEXP line_listSEXP, SEXP bwsSEXP, SEXP max_depthSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< List >::type neighbour_list(neighbour_listSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type events(eventsSEXP);
+    Rcpp::traits::input_parameter< DataFrame >::type line_list(line_listSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type bws(bwsSEXP);
+    Rcpp::traits::input_parameter< int >::type max_depth(max_depthSEXP);
+    rcpp_result_gen = Rcpp::wrap(corrfactor_discontinuous(neighbour_list, events, line_list, bws, max_depth));
+    return rcpp_result_gen;
+END_RCPP
+}
+// corrfactor_continuous_sparse
+List corrfactor_continuous_sparse(List neighbour_list, NumericVector events, DataFrame line_list, NumericVector bws, int max_depth);
+RcppExport SEXP _spNetworkCpp_corrfactor_continuous_sparse(SEXP neighbour_listSEXP, SEXP eventsSEXP, SEXP line_listSEXP, SEXP bwsSEXP, SEXP max_depthSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< List >::type neighbour_list(neighbour_listSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type events(eventsSEXP);
+    Rcpp::traits::input_parameter< DataFrame >::type line_list(line_listSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type bws(bwsSEXP);
+    Rcpp::traits::input_parameter< int >::type max_depth(max_depthSEXP);
+    rcpp_result_gen = Rcpp::wrap(corrfactor_continuous_sparse(neighbour_list, events, line_list, bws, max_depth));
+    return rcpp_result_gen;
+END_RCPP
+}
+// corrfactor_continuous
+List corrfactor_continuous(List neighbour_list, NumericVector events, DataFrame line_list, NumericVector bws, int max_depth);
+RcppExport SEXP _spNetworkCpp_corrfactor_continuous(SEXP neighbour_listSEXP, SEXP eventsSEXP, SEXP line_listSEXP, SEXP bwsSEXP, SEXP max_depthSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< List >::type neighbour_list(neighbour_listSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type events(eventsSEXP);
+    Rcpp::traits::input_parameter< DataFrame >::type line_list(line_listSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type bws(bwsSEXP);
+    Rcpp::traits::input_parameter< int >::type max_depth(max_depthSEXP);
+    rcpp_result_gen = Rcpp::wrap(corrfactor_continuous(neighbour_list, events, line_list, bws, max_depth));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_spNetworkCpp_continuous_nkde_cpp_arma_sparse", (DL_FUNC) &_spNetworkCpp_continuous_nkde_cpp_arma_sparse, 10},
     {"_spNetworkCpp_continuous_nkde_cpp_arma", (DL_FUNC) &_spNetworkCpp_continuous_nkde_cpp_arma, 10},
     {"_spNetworkCpp_discontinuous_nkde_cpp_arma_sparse", (DL_FUNC) &_spNetworkCpp_discontinuous_nkde_cpp_arma_sparse, 10},
     {"_spNetworkCpp_discontinuous_nkde_cpp_arma", (DL_FUNC) &_spNetworkCpp_discontinuous_nkde_cpp_arma, 10},
+    {"_spNetworkCpp_corrfactor_discontinuous_sparse", (DL_FUNC) &_spNetworkCpp_corrfactor_discontinuous_sparse, 5},
+    {"_spNetworkCpp_corrfactor_discontinuous", (DL_FUNC) &_spNetworkCpp_corrfactor_discontinuous, 5},
+    {"_spNetworkCpp_corrfactor_continuous_sparse", (DL_FUNC) &_spNetworkCpp_corrfactor_continuous_sparse, 5},
+    {"_spNetworkCpp_corrfactor_continuous", (DL_FUNC) &_spNetworkCpp_corrfactor_continuous, 5},
     {NULL, NULL, 0}
 };
 
