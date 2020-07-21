@@ -112,6 +112,15 @@ arma::vec triangle_kernel(arma::vec d, double bw){
 }
 
 
+arma::vec uniform_kernel(arma::vec d, double bw){
+  arma::vec k = d;
+  k.fill(1.0/(bw*2.0));
+  arma::uvec test = arma::find(d>=bw);
+  k.elem(test).fill(0.0);
+  return k;
+}
+
+
 arma::vec epanechnikov_kernel(arma::vec d, double bw){
   arma::vec u = d/bw ;
   arma::vec k = ((3.0/4.0) * (1.0-arma::pow(u,2))) / bw;
@@ -178,6 +187,9 @@ fptr select_kernel(std::string c) {
   }
   if (c.compare("triangle")==0 ) {
     return triangle_kernel;
+  }
+  if (c.compare("uniform")==0 ) {
+    return uniform_kernel;
   }
   if (c.compare("quartic")==0 ) {
     return quartic_kernel;
