@@ -228,6 +228,7 @@ fptr select_kernel(std::string c) {
 //' @return a vector with the kernel values calculated for each samples from
 //' the first node given
 arma::vec esc_kernel_rcpp_arma_sparse(fptr kernel_func, arma::vec samples_k, List neighbour_list, arma::sp_mat edge_mat, int v, int v1, int l1, double d,double alpha, double bw, NumericVector line_weights, arma::vec samples_edgeid, arma::vec samples_x, arma::vec samples_y, arma::vec nodes_x, arma::vec nodes_y , int depth, int max_depth){
+
   //step1 find the index of the right samples
   arma::uvec test = arma::find(samples_edgeid==l1);
   arma::vec sampling_x = samples_x.elem(test);
@@ -264,8 +265,8 @@ arma::vec esc_kernel_rcpp_arma_sparse(fptr kernel_func, arma::vec samples_k, Lis
         if(li==l1){
           //we must backfire only if we have a true intersection
           if(n>2){
-            double p2 = (n-2.0)/n;
-            double n_alpha = -1.0 * alpha * p2;
+            double p2 = (2.0-n)/n;
+            double n_alpha = alpha * p2;
             samples_k = esc_kernel_rcpp_arma_sparse(kernel_func, samples_k, neighbour_list, edge_mat, v1,vi, li, d2, n_alpha, bw, line_weights, samples_edgeid, samples_x, samples_y, nodes_x, nodes_y, new_depth, max_depth);
           }
         }else{
@@ -340,8 +341,8 @@ arma::vec esc_kernel_rcpp_arma(fptr kernel_func, arma::vec samples_k, List neigh
         if(li==l1){
           //we must backfire only if we have a true intersection
           if(n>2){
-            double p2 = (n-2.0)/n;
-            double n_alpha = -1.0 * alpha * p2;
+            double p2 = (2.0-n)/n;
+            double n_alpha = alpha * p2;
             samples_k = esc_kernel_rcpp_arma(kernel_func, samples_k, neighbour_list, edge_mat, v1,vi, li, d2, n_alpha, bw, line_weights, samples_edgeid, samples_x, samples_y, nodes_x, nodes_y, new_depth, max_depth);
           }
         }else{
@@ -375,6 +376,7 @@ arma::vec esc_kernel_rcpp_arma(fptr kernel_func, arma::vec samples_k, List neigh
 // [[Rcpp::export]]
 DataFrame continuous_nkde_cpp_arma_sparse(List neighbour_list, NumericVector events, NumericVector weights, DataFrame samples, NumericVector bws, std::string kernel_name, DataFrame nodes, DataFrame line_list, int max_depth, bool verbose){
 
+  //continuous_nkde_cpp_arma_sparse(neighbour_list,events$vertex_id, events$weight, samples@data, bws, kernel_name, nodes@data, graph_result$linelist, max_depth, tol, verbose)
   //selecting the kernel function
   fptr kernel_func = select_kernel(kernel_name);
 
@@ -399,7 +401,6 @@ DataFrame continuous_nkde_cpp_arma_sparse(List neighbour_list, NumericVector eve
   //calculer le dictionnaire des lignes
   //IntegerMatrix edge_mat = make_matrix(line_list,neighbour_list);
   arma::sp_mat edge_mat = make_matrix_sparse(line_list,neighbour_list);
-  Rcout << "The matrix was generated\n";
   //step2 : iterer sur chaque event
   int cnt_e = events.length()-1;
   Progress p(cnt_e, verbose);
@@ -411,15 +412,15 @@ DataFrame continuous_nkde_cpp_arma_sparse(List neighbour_list, NumericVector eve
     double bw = bws[i];
     //on veut trouver toutes les voisins emannant de y
     IntegerVector y_neighbours = neighbour_list[y-1];
-    int cnt_y = y_neighbours.length()-1;
-    for(int j=0; j <= cnt_y; ++j){
+    int cnt_y = y_neighbours.length();
+    double alpha = 2.0/cnt_y;
+    for(int j=0; j < cnt_y; ++j){
       //preparing all values for this loop
       int vi = y_neighbours[j];
       //int li = edge_dict[y][vi];
       int li = edge_mat(y,vi);
       double d = 0.0 ;
       int depth = 0 ;
-      double alpha = 1.0 ;
       // launching recursion
       samples_k.fill(0.0);
       samples_k = esc_kernel_rcpp_arma_sparse(kernel_func, samples_k, neighbour_list, edge_mat ,y,vi,li,d,alpha,bw, line_weights, samples_edgeid, samples_x, samples_y, nodes_x, nodes_y, depth,max_depth);
@@ -480,7 +481,6 @@ DataFrame continuous_nkde_cpp_arma(List neighbour_list, NumericVector events, Nu
 
   //calculer le dictionnaire des lignes
   IntegerMatrix edge_mat = make_matrix(line_list,neighbour_list);
-  Rcout << "The matrix was generated\n";
   //step2 : iterer sur chaque event
   int cnt_e = events.length()-1;
   Progress p(cnt_e, verbose);
@@ -492,15 +492,15 @@ DataFrame continuous_nkde_cpp_arma(List neighbour_list, NumericVector events, Nu
     double bw = bws[i];
     //on veut trouver toutes les voisins emannant de y
     IntegerVector y_neighbours = neighbour_list[y-1];
-    int cnt_y = y_neighbours.length()-1;
-    for(int j=0; j <= cnt_y; ++j){
+    int cnt_y = y_neighbours.length();
+    double alpha = 2.0/cnt_y;
+    for(int j=0; j < cnt_y; ++j){
       //preparing all values for this loop
       int vi = y_neighbours[j];
       //int li = edge_dict[y][vi];
       int li = edge_mat(y,vi);
       double d = 0.0 ;
       int depth = 0 ;
-      double alpha = 1.0 ;
       // launching recursion
       samples_k.fill(0.0);
       samples_k = esc_kernel_rcpp_arma(kernel_func, samples_k, neighbour_list, edge_mat ,y,vi,li,d,alpha,bw, line_weights, samples_edgeid, samples_x, samples_y, nodes_x, nodes_y, depth,max_depth);
