@@ -156,11 +156,20 @@ arma::vec cosine_kernel(arma::vec d, double bw){
   return k;
 }
 
-
 arma::vec gaussian_kernel(arma::vec d, double bw){
   arma::vec u = d/bw ;
   double t1 = 1.0/(sqrt(2.0*M_PI));
   arma::vec k = (t1 * (arma::exp(-1.0 * (1.0/2.0) * arma::pow(u,2)))) / bw;
+  arma::uvec test = arma::find(d>=bw);
+  k.elem(test).fill(0.0);
+  return k;
+}
+
+arma::vec gaussian_kernel_scaled(arma::vec d, double bw){
+  double bw2 = bw/3.0;
+  arma::vec u = d/bw2 ;
+  double t1 = 1.0/(sqrt(2.0*M_PI));
+  arma::vec k = (t1 * (arma::exp(-1.0 * (1.0/2.0) * arma::pow(u,2)))) / bw2;
   arma::uvec test = arma::find(d>=bw);
   k.elem(test).fill(0.0);
   return k;
@@ -172,6 +181,9 @@ arma::vec gaussian_kernel(arma::vec d, double bw){
 fptr select_kernel(std::string c) {
   if (c.compare("gaussian")==0 ) {
     return gaussian_kernel;
+  }
+  if (c.compare("scaled gaussian")==0 ) {
+    return gaussian_kernel_scaled;
   }
   if (c.compare("cosine")==0 ) {
     return cosine_kernel;
