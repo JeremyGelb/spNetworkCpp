@@ -1,15 +1,15 @@
 Package: spNetworkCpp
 Type: Package
 Title: Spatial Analysis on network
-Version: 0.1.4
+Version: 1.0.0
 Authors@R: c(
     person("Jeremy", "Gelb", email = "jeremy.gelb@ucs.inrs.ca",role = c("aut", "cre")))
-Description: The spNetwork packages provides functions to perform spatial analysis on network.
-    To increase calculation speed, some algorithms have been written with Rcpp. Actually, it is
-    not possible to call easily a Rcpp function in a multicore context. The only workarround is 
+Description: The spNetwork package provides functions to perform spatial analysis on network.
+    To increase calculation speed, some algorithms have been written with Rcpp. Currently, it is
+    not possible to easily call a Rcpp function in a multicore context. The only workaround is 
     to put the Rcpp functions in a separate package, and to directly load this package in each 
-    separate R instances. Thus, the spNetworkCpp contains the Rcpp functions used in the package
-    spNetwork.
+    separate R instance. Thus, the spNetworkCpp contains the Rcpp functions used in the
+    spNetwork package.
 License: GPL-2
 Encoding: UTF-8
 LazyData: true
