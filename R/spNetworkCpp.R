@@ -1,5 +1,5 @@
 #' @useDynLib spNetworkCpp
 #' @importFrom Rcpp sourceCpp
-#' @importFrom RcppProgress sourceCpp
+#' @importFrom RcppProgress
 #' @importFrom RcppArmadillo armadillo_version
 NULL
