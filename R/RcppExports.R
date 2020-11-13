@@ -2,7 +2,7 @@
 # Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 #' @title The worker function to calculate continuous NKDE (with ARMADILLO and sparse matrix)
-#' @name continuousWorker
+#' @name continuousWorker_sparse
 #' @param kernel_func a cpp pointer function (selected with the kernel name)
 #' @param samples_k a numeric vector of the actual kernel values, updates at
 #' each recursion
@@ -10,17 +10,17 @@
 #' its neighbours
 #' @param edge_mat matrix, to find the id of each edge given two neighbours.
 #' @param v the actual node to consider for the recursion (int)
-#' @param v1 the connected node to considere for the recursion (int)
+#' @param v1 the connected node to consider for the recursion (int)
 #' @param l1 the edge connecting v and v1 (int)
 #' @param d the actual distance traveled before the recursion
-#' @param alpha th actual alpha value before the recursion
-#' @param bw the kernel bandiwdth
+#' @param alpha the actual alpha value before the recursion
+#' @param bw the kernel bandwidth
 #' @param line_weights a vector with the length of the edges
 #' @param samples_edgeid a vector associating each sample to an edge
-#' @param samples_x a vector with the x coordinates of each sample
-#' @param samples_ya vector with the y coordinates of each sample
-#' @param nodes_x a vector with the x coordinates of each node
-#' @param nodes_y a vector with the y coordinates of each node
+#' @param samples_x a vector with x coordinates of each sample
+#' @param samples_y a vector with y coordinates of each sample
+#' @param nodes_x a vector with x coordinates of each node
+#' @param nodes_y a vector with y coordinates of each node
 #' @param depth the actual recursion depth
 #' @param max_depth the maximum recursion depth
 #' @return a vector with the kernel values calculated for each samples from
@@ -28,25 +28,25 @@
 NULL
 
 #' @title The worker function to calculate continuous NKDE (with ARMADILLO and Integer matrix)
-#' @name continuousWorker
+#' @name continuousWorker_int
 #' @param kernel_func a cpp pointer function (selected with the kernel name)
 #' @param samples_k a numeric vector of the actual kernel values, updates at
 #' each recursion
-#' @param neighbour_list a List, giving for each node an IntegerVector with
+#' @param neighbour_list a List, providing an IntegerVector for each node with
 #' its neighbours
 #' @param edge_mat matrix, to find the id of each edge given two neighbours.
 #' @param v the actual node to consider for the recursion (int)
-#' @param v1 the connected node to considere for the recursion (int)
+#' @param v1 the connected node to consider for the recursion (int)
 #' @param l1 the edge connecting v and v1 (int)
 #' @param d the actual distance traveled before the recursion
-#' @param alpha th actual alpha value before the recursion
-#' @param bw the kernel bandiwdth
+#' @param alpha the actual alpha value before the recursion
+#' @param bw the kernel bandwidth
 #' @param line_weights a vector with the length of the edges
 #' @param samples_edgeid a vector associating each sample to an edge
-#' @param samples_x a vector with the x coordinates of each sample
-#' @param samples_ya vector with the y coordinates of each sample
-#' @param nodes_x a vector with the x coordinates of each node
-#' @param nodes_y a vector with the y coordinates of each node
+#' @param samples_x a vector with x coordinates of each sample
+#' @param samples_y a vector with y coordinates of each sample
+#' @param nodes_x a vector with x coordinates of each node
+#' @param nodes_y a vector with y coordinates of each node
 #' @param depth the actual recursion depth
 #' @param max_depth the maximum recursion depth
 #' @return a vector with the kernel values calculated for each samples from
@@ -54,7 +54,7 @@ NULL
 NULL
 
 #' @title The worker function to calculate discontinuous NKDE (with ARMADILLO and sparse matrix)
-#' @name discontinuousWorker
+#' @name discontinuousWorker_sparse
 #' @param kernel_func a cpp pointer function (selected with the kernel name)
 #' @param edge_mat matrix, to find the id of each edge given two neighbours
 #' @param neighbour_list a List, giving for each node an IntegerVector with
@@ -63,10 +63,10 @@ NULL
 #' @param bw the kernel bandiwdth
 #' @param line_weights a vector with the length of the edges
 #' @param samples_edgeid a vector associating each sample to an edge
-#' @param samples_x a vector with the x coordinates of each sample
-#' @param samples_ya vector with the y coordinates of each sample
-#' @param nodes_x a vector with the x coordinates of each node
-#' @param nodes_y a vector with the y coordinates of each node
+#' @param samples_x a vector with x coordinates of each sample
+#' @param samples_ya vector with y coordinates of each sample
+#' @param nodes_x a vector with x coordinates of each node
+#' @param nodes_y a vector with y coordinates of each node
 #' @param depth the actual recursion depth
 #' @param max_depth the maximum recursion depth
 #' @return a vector with the kernel values calculated for each samples from
@@ -74,7 +74,7 @@ NULL
 NULL
 
 #' @title The worker function to calculate discontinuous NKDE (with ARMADILLO and Integer matrix)
-#' @name discontinuousWorker
+#' @name discontinuousWorker_int
 #' @param kernel_func a cpp pointer function (selected with the kernel name)
 #' @param edge_mat matrix, to find the id of each edge given two neighbours
 #' @param neighbour_list a List, giving for each node an IntegerVector with
@@ -83,10 +83,10 @@ NULL
 #' @param bw the kernel bandiwdth
 #' @param line_weights a vector with the length of the edges
 #' @param samples_edgeid a vector associating each sample to an edge
-#' @param samples_x a vector with the x coordinates of each sample
-#' @param samples_ya vector with the y coordinates of each sample
-#' @param nodes_x a vector with the x coordinates of each node
-#' @param nodes_y a vector with the y coordinates of each node
+#' @param samples_x a vector with x coordinates of each sample
+#' @param samples_ya vector with y coordinates of each sample
+#' @param nodes_x a vector with x coordinates of each node
+#' @param nodes_y a vector with y coordinates of each node
 #' @param depth the actual recursion depth
 #' @param max_depth the maximum recursion depth
 #' @return a vector with the kernel values calculated for each samples from
@@ -117,7 +117,7 @@ NULL
 #' @param line_list a DataFrame representing the lines of the graph
 #' @param max_depth the maximum recursion depth (after which recursion is stopped)
 #' @param verbose a boolean indicating if the function must print its progress
-#' @return a DataFrame with two columns : the kernel values (sum_k) and the number of event reaching each samples (n)
+#' @return a DataFrame with two columns : the kernel values (sum_k) and the number of events for each sample (n)
 #' @export
 #'
 continuous_nkde_cpp_arma_sparse <- function(neighbour_list, events, weights, samples, bws, kernel_name, nodes, line_list, max_depth, verbose) {
@@ -136,7 +136,7 @@ continuous_nkde_cpp_arma_sparse <- function(neighbour_list, events, weights, sam
 #' @param line_list a DataFrame representing the lines of the graph
 #' @param max_depth the maximum recursion depth (after which recursion is stopped)
 #' @param verbose a boolean indicating if the function must print its progress
-#' @return a DataFrame with two columns : the kernel values (sum_k) and the number of event reaching each samples (n)
+#' @return a DataFrame with two columns : the kernel values (sum_k) and the number of events for each sample (n)
 #' @export
 #'
 continuous_nkde_cpp_arma <- function(neighbour_list, events, weights, samples, bws, kernel_name, nodes, line_list, max_depth, verbose) {
@@ -155,7 +155,7 @@ continuous_nkde_cpp_arma <- function(neighbour_list, events, weights, samples, b
 #' @param line_list a DataFrame representing the lines of the graph
 #' @param max_depth the maximum recursion depth (after which recursion is stopped)
 #' @param verbose a boolean indicating if the function must print its progress
-#' @return a DataFrame with two columns : the kernel values (sum_k) and the number of event reaching each samples (n)
+#' @return a DataFrame with two columns : the kernel values (sum_k) and the number of events for each sample (n)
 #' @export
 #'
 discontinuous_nkde_cpp_arma_sparse <- function(neighbour_list, events, weights, samples, bws, kernel_name, nodes, line_list, max_depth, verbose) {
@@ -174,14 +174,14 @@ discontinuous_nkde_cpp_arma_sparse <- function(neighbour_list, events, weights, 
 #' @param line_list a DataFrame representing the lines of the graph
 #' @param max_depth the maximum recursion depth (after which recursion is stopped)
 #' @param verbose a boolean indicating if the function must print its progress
-#' @return a DataFrame with two columns : the kernel values (sum_k) and the number of event reaching each samples (n)
+#' @return a DataFrame with two columns : the kernel values (sum_k) and the number of events for each sample (n)
 #' @export
 #'
 discontinuous_nkde_cpp_arma <- function(neighbour_list, events, weights, samples, bws, kernel_name, nodes, line_list, max_depth, verbose) {
     .Call('_spNetworkCpp_discontinuous_nkde_cpp_arma', PACKAGE = 'spNetworkCpp', neighbour_list, events, weights, samples, bws, kernel_name, nodes, line_list, max_depth, verbose)
 }
 
-#' @title A function to calculate the necessary informations to apply the
+#' @title A function to calculate the necessary information to apply the
 #' Diggle correction factor with a discontinuous method (sparse)
 #' @name corrfactor_discontinuous_sparse
 #' @param neighbour_list a list of the neighbours of each node
@@ -200,7 +200,7 @@ corrfactor_discontinuous <- function(neighbour_list, events, line_list, bws, max
     .Call('_spNetworkCpp_corrfactor_discontinuous', PACKAGE = 'spNetworkCpp', neighbour_list, events, line_list, bws, max_depth)
 }
 
-#' @title A function to calculate the necessary informations to apply the
+#' @title A function to calculate the necessary information to apply the
 #' Diggle correction factor with a continuous method (sparse)
 #' @name corrfactor_continuous_sparse
 #' @param neighbour_list a list of the neighbours of each node
@@ -215,7 +215,7 @@ corrfactor_continuous_sparse <- function(neighbour_list, events, line_list, bws,
     .Call('_spNetworkCpp_corrfactor_continuous_sparse', PACKAGE = 'spNetworkCpp', neighbour_list, events, line_list, bws, max_depth)
 }
 
-#' @title A function to calculate the necessary informations to apply the
+#' @title A function to calculate the necessary information to apply the
 #' Diggle correction factor with a continuous method
 #' @name corrfactor_continuous
 #' @param neighbour_list a list of the neighbours of each node
